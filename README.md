@@ -17,6 +17,30 @@ Desde la carpeta del proyecto:
 python main.py
 ```
 
+También puedes iniciar la interfaz gráfica:
+
+```powershell
+python gui.py
+```
+
+La ventana abre una prueba rápida de caída libre: presiona **Ver caer la pelota**
+para iniciar la animación. Todo ocurre en la misma ventana. Si quieres, en
+**Más opciones** puedes agregar otros movimientos y compararlos; luego puedes
+volver a la prueba rápida. Al final se muestran posición, velocidad y
+aceleración, y puedes guardar los resultados en CSV. La interfaz usa Tkinter,
+incluido en las instalaciones habituales de Python para Windows.
+
+### Cómo leer el código de la interfaz
+
+- `create_physical_system()` convierte los datos del formulario en una instancia
+  del modelo elegido.
+- `_run_simulation()` entrega los sistemas a `Simulation`; las fórmulas físicas
+  siguen en `models/`, separadas de la interfaz.
+- `_prepare_animation()` organiza las posiciones y limita los cuadros dibujados
+  para que la animación no se vuelva lenta. No cambia los resultados físicos.
+- `_animate_next_frame()` dibuja cada cuadro y, al terminar, llena la tabla con
+  los resultados finales.
+
 El programa inicia con ejemplos de caída libre y movimiento rectilíneo. En el
 menú puedes agregar cualquiera de estos modelos:
 

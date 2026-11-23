@@ -7,6 +7,7 @@ from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
+from gui import create_physical_system, position_coordinates
 from main import create_system, main
 from models.circular_motion import CircularMotion
 from models.free_fall import FreeFall
@@ -217,6 +218,33 @@ class MenuTests(unittest.TestCase):
         self.assertIn("Simulación completada: 1 instantes calculados.", output.getvalue())
         self.assertIn("REPORTE DE SIMULACIÓN", output.getvalue())
         self.assertIn("Simulador finalizado.", output.getvalue())
+
+
+class GuiTests(unittest.TestCase):
+    def test_graphical_interface_factory_creates_spring_oscillator(self):
+        system = create_physical_system(
+            "Oscilador armónico",
+            {
+                "amplitude": 2,
+                "phase_degrees": 0,
+                "mass": 2,
+                "spring_constant": 8,
+            },
+            oscillator_uses_spring=True,
+            name="Resorte A",
+        )
+
+        self.assertIsInstance(system, Oscillator)
+        self.assertEqual(system.name, "Resorte A")
+        self.assertEqual(system.angular_frequency, 2)
+
+    def test_graphical_interface_maps_positions_to_canvas_coordinates(self):
+        self.assertEqual(position_coordinates(FreeFall(10), 4), (0, 4))
+        self.assertEqual(position_coordinates(LinearMotion(0, 1, 0), 4), (4, 0))
+        self.assertEqual(
+            position_coordinates(ProjectileMotion(0, 1, 45), (2, 3)),
+            (2, 3),
+        )
 
 
 if __name__ == "__main__":
