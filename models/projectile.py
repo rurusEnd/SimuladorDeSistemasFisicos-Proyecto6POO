@@ -11,15 +11,18 @@ class ProjectileMotion(PhysicalSystem):
         angle_degrees: float,
         gravity: float = 9.81,
         name: str = "Movimiento parabólico",
+        *,
+        initial_x: float = 0.0,
     ):
         super().__init__(name)
         self.validate_parameter("La altura inicial", initial_height, 0)
         self.validate_parameter("La rapidez inicial", initial_speed, 0)
         self.validate_parameter("El ángulo", angle_degrees)
         self.validate_parameter("La gravedad", gravity, 0, strictly_greater=True)
+        self.validate_parameter("La posición horizontal inicial", initial_x)
         angle = radians(angle_degrees)
         self._initial_height = initial_height
-        self._initial_x = 0.0
+        self._initial_x = initial_x
         self._velocity_x = initial_speed * cos(angle)
         self._velocity_y = initial_speed * sin(angle)
         self._gravity = gravity

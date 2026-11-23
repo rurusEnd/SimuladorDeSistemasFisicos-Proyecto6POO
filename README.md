@@ -26,9 +26,15 @@ menú puedes agregar cualquiera de estos modelos:
 4. Movimiento circular
 5. Oscilador armónico
 
+El movimiento parabólico acepta posiciones iniciales horizontal y vertical.
+El movimiento circular también permite definir el centro y la aceleración
+angular. Para el oscilador puedes ingresar directamente la frecuencia angular
+o calcularla a partir de la masa y la constante del resorte (`ω = √(k/m)`).
+
 Al ejecutar una simulación se indica la duración y el intervalo entre muestras.
 El estado final se compara automáticamente; también puedes volver a consultar
-la comparación o guardar todo el historial en `resultados.csv`.
+la comparación, ver el historial completo (opción 5) o guardar todo el
+historial en `resultados.csv`.
 
 Los tiempos deben ser finitos y no negativos, el intervalo debe ser mayor que
 cero y cada simulación está limitada a 100 000 muestras.

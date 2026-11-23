@@ -69,23 +69,52 @@ def create_system() -> PhysicalSystem:
         )
     elif choice == "3":
         system = ProjectileMotion(
-            read_float("Altura inicial (m): ", 0),
-            read_float("Rapidez inicial (m/s): ", 0),
-            read_float("Ángulo respecto a la horizontal (grados): "),
-            read_float("Gravedad (m/s²) [9.81]: ", default=9.81),
+            initial_height=read_float("Altura inicial y0 (m): ", 0),
+            initial_speed=read_float("Rapidez inicial v0 (m/s): ", 0),
+            angle_degrees=read_float(
+                "Ángulo respecto a la horizontal (grados): "
+            ),
+            gravity=read_float("Gravedad (m/s²) [9.81]: ", default=9.81),
+            initial_x=read_float("Posición horizontal inicial x0 (m) [0]: ", default=0),
         )
     elif choice == "4":
         system = CircularMotion(
-            read_float("Radio (m): ", 0),
-            read_float("Velocidad angular (rad/s): "),
-            read_float("Ángulo inicial (grados) [0]: ", default=0),
+            radius=read_float("Radio (m): ", 0, strictly_greater=True),
+            angular_velocity=read_float("Velocidad angular inicial (rad/s): "),
+            initial_angle_degrees=read_float(
+                "Ángulo inicial (grados) [0]: ", default=0
+            ),
+            center_x=read_float("Coordenada x del centro (m) [0]: ", default=0),
+            center_y=read_float("Coordenada y del centro (m) [0]: ", default=0),
+            angular_acceleration=read_float(
+                "Aceleración angular (rad/s²) [0]: ", default=0
+            ),
         )
     else:
-        system = Oscillator(
-            read_float("Amplitud (m): ", 0),
-            read_float("Frecuencia angular (rad/s): ", 0, strictly_greater=True),
-            read_float("Fase inicial (grados) [0]: ", default=0),
-        )
+        amplitude = read_float("Amplitud (m): ", 0)
+        use_spring = input(
+            "¿Calcular frecuencia con masa y constante del resorte? (s/N): "
+        ).strip().lower() == "s"
+        phase = read_float("Fase inicial (grados) [0]: ", default=0)
+        if use_spring:
+            mass = read_float("Masa (kg): ", 0, strictly_greater=True)
+            spring_constant = read_float(
+                "Constante del resorte (N/m): ", 0, strictly_greater=True
+            )
+            system = Oscillator(
+                amplitude=amplitude,
+                phase_degrees=phase,
+                mass=mass,
+                spring_constant=spring_constant,
+            )
+        else:
+            system = Oscillator(
+                amplitude=amplitude,
+                angular_frequency=read_float(
+                    "Frecuencia angular (rad/s): ", 0, strictly_greater=True
+                ),
+                phase_degrees=phase,
+            )
 
     name = input(f"Nombre del sistema [{system.name}]: ").strip()
     if name:
@@ -107,7 +136,8 @@ def main() -> None:
             "\n2. Ejecutar simulación"
             "\n3. Comparar resultados"
             "\n4. Guardar resultados en CSV"
-            "\n5. Salir"
+            "\n5. Ver historial completo"
+            "\n6. Salir"
         )
         choice = input("Opción: ").strip()
 
@@ -138,10 +168,12 @@ def main() -> None:
                 continue
             print(f"Resultados guardados en: {saved_path.resolve()}")
         elif choice == "5":
+            simulation.show_summary()
+        elif choice == "6":
             print("Simulador finalizado.")
             break
         else:
-            print("Opción inválida. Elija una opción del 1 al 5.")
+            print("Opción inválida. Elija una opción del 1 al 6.")
 
 
 if __name__ == "__main__":

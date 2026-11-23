@@ -1,9 +1,13 @@
 import csv
+import io
 import math
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
+from main import create_system, main
 from models.circular_motion import CircularMotion
 from models.free_fall import FreeFall
 from models.linear_motion import LinearMotion
@@ -29,27 +33,40 @@ class PhysicalSystemTests(unittest.TestCase):
 
     def test_projectile_calculates_two_dimensional_motion_and_impact(self):
         system = ProjectileMotion(
-            initial_height=10, initial_speed=10, angle_degrees=30
+            initial_height=10, initial_speed=10, angle_degrees=30, initial_x=4
         )
         x, y = system.calculate_position(1)
 
-        self.assertAlmostEqual(x, 10 * math.cos(math.radians(30)))
+        self.assertAlmostEqual(x, 4 + 10 * math.cos(math.radians(30)))
         self.assertAlmostEqual(y, 10 + 5 - 0.5 * 9.81)
         self.assertEqual(system.calculate_acceleration(100), (0, 0))
 
     def test_circular_motion_has_centripetal_acceleration(self):
-        system = CircularMotion(radius=2, angular_velocity=3)
+        system = CircularMotion(
+            radius=2,
+            angular_velocity=3,
+            center_x=1,
+            center_y=-1,
+            angular_acceleration=4,
+        )
 
-        self.assertEqual(system.calculate_position(0), (2, 0))
+        self.assertEqual(system.calculate_position(0), (3, -1))
         self.assertEqual(system.calculate_velocity(0), (0, 6))
-        self.assertEqual(system.calculate_acceleration(0), (-18, 0))
+        self.assertEqual(system.calculate_acceleration(0), (-18, 8))
 
     def test_oscillator_calculates_simple_harmonic_motion(self):
-        system = Oscillator(amplitude=2, angular_frequency=3)
+        system = Oscillator(amplitude=2, mass=2, spring_constant=8)
 
+        self.assertEqual(system.angular_frequency, 2)
+        self.assertEqual(system.mass, 2)
+        self.assertEqual(system.spring_constant, 8)
         self.assertEqual(system.calculate_position(0), 2)
         self.assertEqual(system.calculate_velocity(0), 0)
-        self.assertEqual(system.calculate_acceleration(0), -18)
+        self.assertEqual(system.calculate_acceleration(0), -8)
+
+    def test_oscillator_rejects_incomplete_mass_spring_parameters(self):
+        with self.assertRaises(ValueError):
+            Oscillator(amplitude=2, mass=2)
 
     def test_system_rejects_invalid_time_and_parameters(self):
         system = LinearMotion(0, 1, 0)
@@ -130,6 +147,27 @@ class SimulationTests(unittest.TestCase):
 
         self.assertEqual(len(simulation.history["estable"]), 1)
         self.assertEqual(len(simulation.history["desborde"]), 1)
+
+
+class MenuTests(unittest.TestCase):
+    def test_menu_builds_spring_oscillator_from_teammate_parameters(self):
+        responses = ["5", "2", "s", "0", "2", "8", ""]
+        with patch("builtins.input", side_effect=responses):
+            system = create_system()
+
+        self.assertIsInstance(system, Oscillator)
+        self.assertEqual(system.angular_frequency, 2)
+
+    def test_menu_can_run_simulation_show_history_and_exit(self):
+        responses = ["2", "0", "0.1", "5", "6"]
+        output = io.StringIO()
+
+        with patch("builtins.input", side_effect=responses), redirect_stdout(output):
+            main()
+
+        self.assertIn("Simulación completada: 1 instantes calculados.", output.getvalue())
+        self.assertIn("REPORTE DE SIMULACIÓN", output.getvalue())
+        self.assertIn("Simulador finalizado.", output.getvalue())
 
 
 if __name__ == "__main__":
