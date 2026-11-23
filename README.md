@@ -38,6 +38,9 @@ historial en `resultados.csv`.
 
 Los tiempos deben ser finitos y no negativos, el intervalo debe ser mayor que
 cero y cada simulación está limitada a 100 000 muestras.
+Los parámetros también se validan al crear o actualizar un sistema: un dato
+que no sea numérico produce `TypeError`; un valor no finito o fuera de rango
+produce `ValueError`.
 
 ## Probar
 
@@ -45,4 +48,21 @@ cero y cada simulación está limitada a 100 000 muestras.
 python -m unittest discover -s tests -v
 ```
 
-# esta es una prueba en al reunion
+## Integrantes y aportes verificados
+
+Se revisaron los archivos entregados bajo `POO/` y se adaptaron al contrato
+actual (`PhysicalSystem` y métodos en inglés) en lugar de copiar proyectos
+completos encima del simulador.
+
+| Integrante (según la carpeta) | Aporte asignado | Verificación e integración |
+| --- | --- | --- |
+| Nelson — módulo de movimientos rectilíneos | MRU y MRUV | Su `LinearMotion` usa las ecuaciones correctas; con aceleración cero representa MRU. Se integraron propiedades modificables y validadas en `models/linear_motion.py`. |
+| Maycol — movimientos curvos y oscilatorios | Movimiento parabólico, circular y oscilador | Las entregas contienen las ecuaciones de esos tres modelos. Se integraron en `models/projectile.py`, `models/circular_motion.py` y `models/oscillator.py`; el oscilador acepta masa y constante del resorte (`ω = √(k/m)`). |
+| Chalco — encapsulamiento, validaciones y errores | Validar tipos y rangos; proteger parámetros con propiedades | Su copia incluye validación explícita de tipos y propiedades con setters. Se integró ese enfoque en los modelos y en la clase `Simulation`; las entradas no numéricas generan `TypeError` y las fuera de rango `ValueError`. |
+| Angel — interfaz de consola y menú | Captura de parámetros, ejecución y consulta de resultados | Sus menús muestran el flujo previsto, pero el menú nuevo importa módulos `modelos` y `servicios` que no existen en el proyecto y no se conecta tal cual. `main.py` conserva el menú funcional e incluye alta de modelos, simulación, comparación, historial y exportación CSV. |
+
+Las carpetas de Nelson y Chalco contienen copias completas del simulador, no
+solo los módulos de su responsabilidad. Para evitar versiones duplicadas, la
+versión ejecutable y sus pruebas están en la raíz y en `models/` y `tests/`.
+En `POO/` solo aparecen entregas identificadas como integrantes 2, 3, 5 y 6;
+no atribuí aportes a los integrantes 1 y 4 porque no hay carpetas suyas allí.

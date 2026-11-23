@@ -1,4 +1,4 @@
-from math import cos, radians, sin
+from math import cos, degrees, radians, sin
 
 from models.physical_system import PhysicalSystem
 
@@ -28,6 +28,60 @@ class CircularMotion(PhysicalSystem):
         self._center_x = center_x
         self._center_y = center_y
         self._angular_acceleration = angular_acceleration
+
+    @property
+    def radius(self) -> float:
+        return self._radius
+
+    @radius.setter
+    def radius(self, value: float) -> None:
+        self.validate_parameter("El radio", value, 0, strictly_greater=True)
+        self._radius = value
+
+    @property
+    def angular_velocity(self) -> float:
+        return self._angular_velocity
+
+    @angular_velocity.setter
+    def angular_velocity(self, value: float) -> None:
+        self.validate_parameter("La velocidad angular", value)
+        self._angular_velocity = value
+
+    @property
+    def initial_angle_degrees(self) -> float:
+        return degrees(self._initial_angle)
+
+    @initial_angle_degrees.setter
+    def initial_angle_degrees(self, value: float) -> None:
+        self.validate_parameter("El ángulo inicial", value)
+        self._initial_angle = radians(value)
+
+    @property
+    def center_x(self) -> float:
+        return self._center_x
+
+    @center_x.setter
+    def center_x(self, value: float) -> None:
+        self.validate_parameter("La coordenada x del centro", value)
+        self._center_x = value
+
+    @property
+    def center_y(self) -> float:
+        return self._center_y
+
+    @center_y.setter
+    def center_y(self, value: float) -> None:
+        self.validate_parameter("La coordenada y del centro", value)
+        self._center_y = value
+
+    @property
+    def angular_acceleration(self) -> float:
+        return self._angular_acceleration
+
+    @angular_acceleration.setter
+    def angular_acceleration(self, value: float) -> None:
+        self.validate_parameter("La aceleración angular", value)
+        self._angular_acceleration = value
 
     def _angle(self, time: float) -> float:
         return (

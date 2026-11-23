@@ -26,6 +26,11 @@ class FreeFall(PhysicalSystem):
     def gravity(self) -> float:
         return self._gravity
 
+    @gravity.setter
+    def gravity(self, value: float) -> None:
+        self.validate_parameter("La gravedad", value, 0, strictly_greater=True)
+        self._gravity = value
+
     def _impact_time(self) -> float:
         return sqrt(2 * self._initial_height / self._gravity)
 

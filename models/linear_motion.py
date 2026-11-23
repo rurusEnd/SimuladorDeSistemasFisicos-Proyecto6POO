@@ -21,13 +21,28 @@ class LinearMotion(PhysicalSystem):
     def initial_position(self) -> float:
         return self._initial_position
 
+    @initial_position.setter
+    def initial_position(self, value: float) -> None:
+        self.validate_parameter("La posición inicial", value)
+        self._initial_position = value
+
     @property
     def initial_velocity(self) -> float:
         return self._initial_velocity
 
+    @initial_velocity.setter
+    def initial_velocity(self, value: float) -> None:
+        self.validate_parameter("La velocidad inicial", value)
+        self._initial_velocity = value
+
     @property
     def acceleration(self) -> float:
         return self._acceleration
+
+    @acceleration.setter
+    def acceleration(self, value: float) -> None:
+        self.validate_parameter("La aceleración", value)
+        self._acceleration = value
 
     def calculate_position(self, time: float) -> float:
         self.validate_time(time)

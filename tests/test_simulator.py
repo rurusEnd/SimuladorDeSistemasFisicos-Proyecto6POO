@@ -76,6 +76,45 @@ class PhysicalSystemTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             FreeFall(initial_height=-1)
 
+    def test_numeric_inputs_reject_non_numbers_and_booleans(self):
+        with self.assertRaises(TypeError):
+            LinearMotion(initial_position=0, initial_velocity="3", acceleration=0)
+        with self.assertRaises(TypeError):
+            LinearMotion(initial_position=False, initial_velocity=3, acceleration=0)
+
+        system = LinearMotion(0, 1, 0)
+        with self.assertRaises(TypeError):
+            system.calculate_position("2")
+
+    def test_model_properties_validate_and_update_parameters(self):
+        linear = LinearMotion(0, 1, 0)
+        linear.initial_position = 2
+        linear.initial_velocity = 3
+        linear.acceleration = 4
+        self.assertEqual(linear.calculate_position(2), 16)
+        with self.assertRaises(TypeError):
+            linear.acceleration = "4"
+        self.assertEqual(linear.acceleration, 4)
+
+        free_fall = FreeFall(initial_height=4)
+        with self.assertRaises(ValueError):
+            free_fall.gravity = 0
+        self.assertEqual(free_fall.gravity, 9.81)
+
+        projectile = ProjectileMotion(0, 2, 0)
+        projectile.initial_speed = 4
+        projectile.angle_degrees = 90
+        self.assertAlmostEqual(projectile.calculate_velocity(0)[1], 4)
+
+        circular = CircularMotion(radius=2, angular_velocity=1)
+        circular.radius = 3
+        circular.center_x = 5
+        self.assertEqual(circular.calculate_position(0), (8, 0))
+
+        oscillator = Oscillator(amplitude=2, mass=2, spring_constant=8)
+        oscillator.mass = 8
+        self.assertEqual(oscillator.angular_frequency, 1)
+
 
 class SimulationTests(unittest.TestCase):
     def test_simulation_includes_start_and_exact_end_times(self):
@@ -129,6 +168,16 @@ class SimulationTests(unittest.TestCase):
         simulation.add_system(LinearMotion(0, 1, 0))
         with self.assertRaises(ValueError):
             simulation.simulate(1, 0)
+
+    def test_simulation_validates_name_and_system_types(self):
+        with self.assertRaises(TypeError):
+            Simulation(123)
+
+        simulation = Simulation("prueba")
+        with self.assertRaises(TypeError):
+            simulation.add_system("sistema")
+        with self.assertRaises(TypeError):
+            simulation.add_system(LinearMotion(0, 1, 0), name=1)
 
     def test_simulation_rejects_too_many_samples(self):
         simulation = Simulation("prueba")

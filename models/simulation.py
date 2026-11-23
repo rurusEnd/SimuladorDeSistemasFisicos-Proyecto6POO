@@ -50,10 +50,26 @@ class Simulation:
         self.history: dict[str, list[Result]] = {}
         self._system_names: dict[PhysicalSystem, str] = {}
 
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @name.setter
+    def name(self, value: str) -> None:
+        if not isinstance(value, str):
+            raise TypeError("El nombre de la simulación debe ser texto.")
+        if not value.strip():
+            raise ValueError("El nombre de la simulación no puede estar vacío.")
+        self._name = value.strip()
+
     def add_system(self, system: PhysicalSystem, name: str | None = None) -> str:
+        if not isinstance(system, PhysicalSystem):
+            raise TypeError("El sistema debe ser una instancia de PhysicalSystem.")
         if system in self.systems:
             raise ValueError("El sistema ya está registrado en esta simulación.")
 
+        if name is not None and not isinstance(name, str):
+            raise TypeError("El nombre del sistema debe ser texto.")
         base_name = name.strip() if name is not None else system.name
         if not base_name:
             raise ValueError("El nombre del sistema no puede estar vacío.")
